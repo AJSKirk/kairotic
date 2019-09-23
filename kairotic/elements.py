@@ -6,7 +6,15 @@ from collections import namedtuple
 DECK_SIZE = 52
 
 
-Card = namedtuple('Card', ['value', 'suit'])
+class Card(namedtuple('Card', ['value', 'suit'])):
+    @property
+    def baccarat_value(self):
+        if self.value == 'A':
+            return 1
+        elif self.value in ('J', 'Q', 'K'):
+            return 0
+        else:
+            return int(self.value)
 
 
 class Die:
