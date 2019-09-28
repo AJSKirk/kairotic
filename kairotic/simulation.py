@@ -1,18 +1,39 @@
 from collections import Counter
 from kairotic.counting import Count
 from kairotic.elements import Shoe
+from kairotic.games.base import Game
 from tqdm import tqdm
 
 
-def simulate_count(count: Count, shoe: Shoe, n_cuts=1000):
+def simulate_count(count: Count, shoe: Shoe, n_cuts: int = 1000):
     seen = Counter()
     print('Simulating {:,} shoes'.format(n_cuts))
     for _ in tqdm(range(n_cuts)):
         while not shoe.cut_card_seen:
-            card, _ = shoe.draw()
+            card = shoe.draw()
             seen.update([count.update(card)])
 
         shoe.reset()
         count.reset()
 
     return seen
+
+
+def calc_outcomes(game: Game, n_rounds: int = 1000000):
+    wins = {bet: 0 for bet in game.bets}
+    evs = {bet: 0 for bet in game.bets}
+    print('Simulating {:,} games'.format(n_rounds))
+    for _ in tqdm(range(n_rounds)):
+        outcome = game.play_round()
+        for bet in game.bets:
+            wins[bet] += (outcome[bet] > 0)
+            if outcome[bet] > 0:
+                evs[bet] += outcome[bet]
+            else:
+                evs[bet] -= 1
+
+    # Normalize
+    # evs = {bet: hits / n_rounds for bet, hits in evs.items()}
+    probs = {bet: hits / n_rounds for bet, hits in wins.items()}
+
+    return probs, evs

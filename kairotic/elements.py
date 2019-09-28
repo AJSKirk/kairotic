@@ -29,7 +29,7 @@ class Shoe:
     suits = ['D', 'H', 'S', 'C']
     values = [str(v) for v in range(2, 11)] + ['A', 'J', 'Q', 'K']
 
-    def __init__(self, num_decks: int, rem_at_cut=1.5):
+    def __init__(self, num_decks: int, rem_at_cut: int=1.5 * DECK_SIZE):
         self.rem_at_cut = rem_at_cut
         self.num_decks = num_decks
         self.reset()
@@ -47,10 +47,10 @@ class Shoe:
     @property
     def cut_card_seen(self) -> bool:
         # +/- half deck on cut card
-        return len(self.remaining) <= self.rem_at_cut * DECK_SIZE
+        return len(self.remaining) <= self.rem_at_cut
 
-    def draw(self) -> (Card, bool):
-        return self.remaining.pop(), self.cut_card_seen
+    def draw(self) -> Card:
+        return self.remaining.pop()
 
 
 class Deck(Shoe):
