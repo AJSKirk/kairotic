@@ -5,22 +5,22 @@ from kairotic.games.base import Game
 from tqdm import tqdm
 
 
-def simulate_count(count: Count, shoe: Shoe, n_cuts: int = 1000):
-    seen = Counter()
+def simulate_count(shoe: Shoe, n_cuts: int = 1000):
+    seen = {count.name: Counter() for count in shoe.counts}
     print('Simulating {:,} shoes'.format(n_cuts))
     for _ in tqdm(range(n_cuts)):
         while not shoe.cut_card_seen:
             card = shoe.draw()
-            seen.update([count.update(card)])
+            for count in shoe.counts:
+                seen[count.name].update([str(count.true_count)])
 
         shoe.reset()
-        count.reset()
 
     return seen
 
 
 def calc_outcomes(game: Game, n_rounds: int = 1000000):
-    wins = {bet: 0 for bet in game.bets}
+    wins = {bet: 0 for bet in game.payouts}
     evs = {bet: 0 for bet in game.bets}
     print('Simulating {:,} games'.format(n_rounds))
     for _ in tqdm(range(n_rounds)):
